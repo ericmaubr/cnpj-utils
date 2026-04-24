@@ -40,6 +40,32 @@ def test_fill_missing_descriptions_com_lookup() -> None:
     ]
 
 
+def test_fill_missing_descriptions_normaliza_codigos_antes_do_lookup() -> None:
+    lookup = {
+        "6201501": "Desenvolvimento de programas de computador sob encomenda",
+        "6202300": (
+            "Desenvolvimento e licenciamento de programas de computador "
+            "customizaveis"
+        ),
+    }
+    principal, principal_desc, secundarios = fill_missing_descriptions(
+        principal="6201-5/01",
+        principal_desc=None,
+        secundarios=[("6202-3/00", ""), ("6203-1/00", "")],
+        cnae_lookup=lookup,
+    )
+
+    assert principal == "6201-5/01"
+    assert principal_desc == "Desenvolvimento de programas de computador sob encomenda"
+    assert secundarios == [
+        (
+            "6202-3/00",
+            "Desenvolvimento e licenciamento de programas de computador customizaveis",
+        ),
+        ("6203-1/00", ""),
+    ]
+
+
 def test_extract_lookup_from_raw_dataframe_layout_concla() -> None:
     df = pd.DataFrame(
         [
