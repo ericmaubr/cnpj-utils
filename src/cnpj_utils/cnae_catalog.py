@@ -37,14 +37,16 @@ def fill_missing_descriptions(
         return principal, principal_desc, list(secundarios)
 
     principal_desc_final = principal_desc
-    if principal and (principal_desc is None or not principal_desc.strip()):
-        principal_desc_final = cnae_lookup.get(principal)
+    principal_code = normalize_cnae_code(principal)
+    if principal_code and (principal_desc is None or not principal_desc.strip()):
+        principal_desc_final = cnae_lookup.get(principal_code)
 
     secundarios_finais: list[SecondaryCnae] = []
     for cnae, desc in secundarios:
         desc_final = desc
-        if not desc or not desc.strip():
-            desc_final = cnae_lookup.get(cnae, "")
+        cnae_code = normalize_cnae_code(cnae)
+        if cnae_code and (not desc or not desc.strip()):
+            desc_final = cnae_lookup.get(cnae_code, "")
         secundarios_finais.append((cnae, desc_final))
 
     return principal, principal_desc_final, secundarios_finais

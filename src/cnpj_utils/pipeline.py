@@ -21,6 +21,7 @@ from .utils import limpar_cnpj
 CnpjResult = tuple[str | None, str | None, list[SecondaryCnae]]
 logger = logging.getLogger("cnpj_utils.pipeline")
 ENRICHMENT_FIXED_COLUMNS = {"SETOR_IBGE", "CNAE_PRINCIPAL", "CNAE_PRINCIPAL_DESC"}
+TRANSIENT_HTTP_STATUS = {408, 425, 429, 500, 502, 503, 504}
 
 CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS cnpj_cache (
@@ -128,15 +129,29 @@ async def fetch_cnpj(
                     )
                     return None, None, []
 
+                if response.status in TRANSIENT_HTTP_STATUS:
+                    raise RuntimeError(f"HTTP transitório {response.status}")
+
+                if 400 <= response.status < 500:
+                    logger.error(
+                        "Erro permanente na API, sem retry | cnpj=%s | status=%s",
+                        cnpj,
+                        response.status,
+                    )
+                    return None, None, []
+
                 if response.status != 200:
                     raise RuntimeError(f"HTTP {response.status}")
 
                 data = await response.json()
                 return extract_cnaes_from_payload(data)
-        except Exception as exc:
+        except (aiohttp.ClientError, asyncio.TimeoutError, RuntimeError) as exc:
             tentativa = attempt + 1
             logger.warning(
-                "Falha na chamada da API | cnpj=%s | tentativa=%s/%s | erro=%s",
+                (
+                    "Falha transitoria na chamada da API | cnpj=%s | tentativa=%s/%s "
+                    "| erro=%s"
+                ),
                 cnpj,
                 tentativa,
                 config.retries,
@@ -145,6 +160,13 @@ async def fetch_cnpj(
             if attempt < config.retries - 1:
                 delay = config.sleep_between_retries * (attempt + 1)
                 await asyncio.sleep(delay)
+        except Exception as exc:
+            logger.error(
+                "Erro permanente ao processar resposta da API | cnpj=%s | erro=%s",
+                cnpj,
+                exc,
+            )
+            return None, None, []
 
     logger.error("Erro final apos retries | cnpj=%s", cnpj)
     return None, None, []

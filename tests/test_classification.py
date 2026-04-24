@@ -52,6 +52,11 @@ def test_classificar_com_fallback_usa_secundario() -> None:
     assert classificar_com_fallback(None, secundarios) == "Servicos"
 
 
+def test_classificar_com_fallback_usa_secundario_quando_principal_invalido() -> None:
+    secundarios = [("6201501", "Software")]
+    assert classificar_com_fallback("0000000", secundarios) == "Servicos"
+
+
 def test_classificar_com_fallback_usa_holding_no_secundario() -> None:
     secundarios = [("6462-0/00", "Holdings de instituicoes nao financeiras")]
     assert classificar_com_fallback(None, secundarios) == "Holdings"

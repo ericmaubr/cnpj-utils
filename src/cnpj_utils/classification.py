@@ -88,7 +88,9 @@ def classificar_com_fallback(
     secundarios: Sequence[SecondaryCnae],
 ) -> str | None:
     if principal:
-        return classificar_setor_ibge(principal)
+        setor_principal = classificar_setor_ibge(principal)
+        if setor_principal:
+            return setor_principal
 
     for cnae, _descricao in secundarios:
         setor = classificar_setor_ibge(cnae)
