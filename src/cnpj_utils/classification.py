@@ -5,7 +5,7 @@ from collections.abc import Sequence
 
 SecondaryCnae = tuple[str, str]
 HOLDINGS_CNAE = {"6461100", "6462000"}
-SERVICOS_SECOES = {"I", "J", "K", "M", "N", "O", "P", "Q", "R", "S"}
+SERVICOS_SECOES = {"F", "I", "J", "K", "M", "N", "O", "P", "Q", "R", "S"}
 SEM_FINS_LUCRATIVOS_DIVISOES = {94}
 SERVICOS_MEDICOS_GRUPOS = {861, 862}
 PROFISSIONAIS_SAUDE_GRUPOS = {863}
@@ -158,7 +158,7 @@ def classificar_setor_ibge(
         return IMPORTACAO_INDUSTRIA
     if secao == "G":
         return COMERCIO
-    if secao in {"B", "C", "D", "E", "F"}:
+    if secao in {"B", "C", "D", "E"}:
         return INDUSTRIA
     if secao in SERVICOS_SECOES:
         return SERVICOS_DEMAIS

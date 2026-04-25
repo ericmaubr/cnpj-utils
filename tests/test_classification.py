@@ -42,6 +42,8 @@ def test_cnae_para_secao(cnae: str | None, secao: str | None) -> None:
     [
         ("0111301", None, PRODUTOR_RURAL),
         ("1011201", None, INDUSTRIA),
+        ("4110700", None, SERVICOS_DEMAIS),
+        ("4329103", None, SERVICOS_DEMAIS),
         ("4711302", None, COMERCIO),
         ("4930202", None, TRANSPORTES),
         ("6821801", None, IMOBILIARIAS),
@@ -66,6 +68,11 @@ def test_classificar_setor_ibge(
 def test_classificar_com_fallback_usa_principal() -> None:
     secundarios = [("4711302", "Comercio varejista"), ("6201501", "Software")]
     assert classificar_com_fallback("1011201", None, secundarios) == INDUSTRIA
+
+
+def test_classificar_com_fallback_trata_construcao_como_servicos() -> None:
+    secundarios = [("4711302", "Comercio varejista")]
+    assert classificar_com_fallback("4329103", None, secundarios) == SERVICOS_DEMAIS
 
 
 def test_classificar_com_fallback_usa_secundario() -> None:
