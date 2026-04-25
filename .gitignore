@@ -210,3 +210,4 @@ __marimo__/
 data/cache/*.db
 data/processed/*.xlsx
 data/raw/modelo_controle_clientes_escritorio.xlsx
+data/raw/~$CNAE_Subclasses_2_3_Estrutura_Detalhada.xlsx
