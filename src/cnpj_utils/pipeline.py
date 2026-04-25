@@ -324,7 +324,7 @@ async def processar_excel_async(
 
     max_sec = max((len(r[2]) for r in resultados), default=0)
 
-    setor_ibge = [classificar_com_fallback(r[0], r[2]) for r in resultados]
+    setor_ibge = [classificar_com_fallback(r[0], r[1], r[2]) for r in resultados]
 
     base_columns = [col for col in df.columns if not _is_enrichment_column(str(col))]
     if len(base_columns) != len(df.columns):
